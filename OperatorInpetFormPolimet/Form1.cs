@@ -13,6 +13,7 @@ namespace OperatorInpetFormPolimet
 {
     public partial class Form1 : Form
     {
+        Param[] Params = new Param[5];
         public Form1()
         {
             InitializeComponent();
@@ -28,6 +29,12 @@ namespace OperatorInpetFormPolimet
 
            // txtbTime.Text = DateTime.Now.ToLongDateString();
             txtbTime.Text = DateTime.Now.ToLocalTime().ToString();
+
+            Params[0] = new Param() { NameShort = "Param_1" };
+            Params[1] = new Param() { NameShort = "Param_2" };
+            Params[2] = new Param() { NameShort = "Param_3" };
+            Params[3] = new Param() { NameShort = "Param_4" };
+            Params[4] = new Param() { NameShort = "Param_5" };
         }
 
         private void rbComment1_CheckedChanged(object sender, EventArgs e)
@@ -140,28 +147,216 @@ namespace OperatorInpetFormPolimet
 
         private void btnOK_Click(object sender, EventArgs e)
         {
+            if (CheckParamInputAll())
+            {
+                string ss = Path.GetDirectoryName(Application.StartupPath);
+                StringBuilder sb = new StringBuilder(txtbTime.Text);
+                sb.Append(";" + Params[0].GetStringToCSV(rbValue1.Checked, txtbValueOpt1.Text, txtbValueReal1.Text, txtbComment1.Text));
+                sb.Append(";" + Params[1].GetStringToCSV(rbValue2.Checked, txtbValueOpt2.Text, txtbValueReal2.Text, txtbComment2.Text));
+                sb.Append(";" + Params[2].GetStringToCSV(rbValue3.Checked, txtbValueOpt3.Text, txtbValueReal3.Text, txtbComment3.Text));
+                sb.Append(";" + Params[3].GetStringToCSV(rbValue4.Checked, txtbValueOpt4.Text, txtbValueReal4.Text, txtbComment4.Text));
+                sb.Append(";" + Params[4].GetStringToCSV(rbValue5.Checked, txtbValueOpt5.Text, txtbValueReal5.Text, txtbComment5.Text));
+                WriteToCSV(sb.ToString());
+            }
+
+
+        }
+
+        //Запись в csv файл
+        private void WriteToCSV (string strToWrite)
+        {
             string ss = Path.GetDirectoryName(Application.StartupPath);
-            string strToCSV;
-
-            String temp = txtbComment1.Text.Replace("\r\n", " ").Trim(); ;
-            strToCSV = txtbTime.Text + ";"+temp;
-
-
             CSVLog csvLog = new CSVLog(ss);
             try
             {
-                csvLog.WriteToCSV(strToCSV);
+                csvLog.WriteToCSV(strToWrite);
             }
             catch (Exception)
             {
-                MessageBox.Show("Произошла ошибка записи данных", "Ошибка", MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("Произошла ошибка записи данных", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             }
             MessageBox.Show("Данные с меткой времени " + txtbTime.Text + " записаны!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             ClearForm();
+
         }
 
-        //Проверка что введенные данные корректны
+        //Проверка ввода для всех параметров
+        private bool CheckParamInputAll()
+        {
+            if (!CheckParamInput1())
+            {
+                MessageBox.Show("Значение не должно быть пустым", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (!CheckParamInput2())
+            {
+                MessageBox.Show("Значение не должно быть пустым", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (!CheckParamInput3())
+            {
+                MessageBox.Show("Значение не должно быть пустым", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (!CheckParamInput4())
+            {
+                MessageBox.Show("Значение не должно быть пустым", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (!CheckParamInput5())
+            {
+                MessageBox.Show("Значение не должно быть пустым", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            return true;
+        }
+
+        //Проверка что введенные данные корректны для 1 параметра
+        private bool CheckParamInput1()
+        {
+            if (rbValue1.Checked)
+            {
+                if(string.IsNullOrEmpty(txtbValueOpt1.Text) && string.IsNullOrEmpty(txtbValueReal1.Text))
+                {
+                    if (string.IsNullOrEmpty(txtbValueOpt1.Text))
+                    {
+                        txtbValueOpt1.Select();
+                    }
+                    else
+                    {
+                        txtbValueReal1.Select();
+                    }
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(txtbComment1.Text))
+                {
+                    txtbComment1.Select();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Проверка что введенные данные корректны для 2 параметра
+        private bool CheckParamInput2()
+        {
+            if (rbValue2.Checked)
+            {
+                if (string.IsNullOrEmpty(txtbValueOpt2.Text) && string.IsNullOrEmpty(txtbValueReal2.Text))
+                {
+                    if (string.IsNullOrEmpty(txtbValueOpt2.Text))
+                    {
+                        txtbValueOpt2.Select();
+                    }
+                    else
+                    {
+                        txtbValueReal2.Select();
+                    }
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(txtbComment2.Text))
+                {
+                    txtbComment2.Select();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Проверка что введенные данные корректны для 3 параметра
+        private bool CheckParamInput3()
+        {
+            if (rbValue3.Checked)
+            {
+                if (string.IsNullOrEmpty(txtbValueOpt3.Text) && string.IsNullOrEmpty(txtbValueReal3.Text))
+                {
+                    if (string.IsNullOrEmpty(txtbValueOpt3.Text))
+                    {
+                        txtbValueOpt3.Select();
+                    }
+                    else
+                    {
+                        txtbValueReal3.Select();
+                    }
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(txtbComment3.Text))
+                {
+                    txtbComment3.Select();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Проверка что введенные данные корректны для 4 параметра
+        private bool CheckParamInput4()
+        {
+            if (rbValue4.Checked)
+            {
+                if (string.IsNullOrEmpty(txtbValueOpt4.Text) && string.IsNullOrEmpty(txtbValueReal4.Text))
+                {
+                    if (string.IsNullOrEmpty(txtbValueOpt4.Text))
+                    {
+                        txtbValueOpt4.Select();
+                    }
+                    else
+                    {
+                        txtbValueReal4.Select();
+                    }
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(txtbComment4.Text))
+                {
+                    txtbComment4.Select();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Проверка что введенные данные корректны для 5 параметра
+        private bool CheckParamInput5()
+        {
+            if (rbValue5.Checked)
+            {
+                if (string.IsNullOrEmpty(txtbValueOpt5.Text) && string.IsNullOrEmpty(txtbValueReal5.Text))
+                {
+                    if (string.IsNullOrEmpty(txtbValueOpt5.Text))
+                    {
+                        txtbValueOpt5.Select();
+                    }
+                    else
+                    {
+                        txtbValueReal5.Select();
+                    }
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(txtbComment5.Text))
+                {
+                    txtbComment5.Select();
+                    return false;
+                }
+            }
+            return true;
+        }
 
         //Очистка формы после записи данных
         private void ClearForm()
