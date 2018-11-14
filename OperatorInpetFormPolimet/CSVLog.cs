@@ -18,9 +18,10 @@ namespace OperatorInpetFormPolimet
 
         public string FirstString { get => firstString; }
 
-        public  CSVLog(string pathToDirectory)
+        public  CSVLog(string fullPathToFile)
         {
-            FullPathToCSVFile = pathToDirectory + Path.DirectorySeparatorChar + nameFileCSV;
+            //FullPathToCSVFile = pathToDirectory + Path.DirectorySeparatorChar + nameFileCSV;
+            FullPathToCSVFile = fullPathToFile;
         }
 
         public  void WriteToCSV (string strValue)

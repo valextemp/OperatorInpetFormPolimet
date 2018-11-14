@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -13,6 +14,7 @@ namespace OperatorInpetFormPolimet
 {
     public partial class Form1 : Form
     {
+        string fileNameCSV;
         Param[] Params = new Param[5];
         public Form1()
         {
@@ -21,20 +23,61 @@ namespace OperatorInpetFormPolimet
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitSetting();
+        }
+
+        private void InitSetting()
+        {
+            string nameRusParam1;
+            string nameRusParam2;
+            string nameRusParam3;
+            string nameRusParam4;
+            string nameRusParam5;
+          
+
+            try
+            {
+                var appSettings = ConfigurationManager.AppSettings;
+                nameRusParam1 = appSettings["Param_1"] ?? "Param_1 default name";
+                nameRusParam2 = appSettings["Param_2"] ?? "Param_2 default name";
+                nameRusParam3 = appSettings["Param_3"] ?? "Param_3 default name";
+                nameRusParam4 = appSettings["Param_4"] ?? "Param_4 default name";
+                nameRusParam5 = appSettings["Param_5"] ?? "Param_5 default name";
+                fileNameCSV = appSettings["FileNameCSV"] ?? "logfile.csv"; ;
+            }
+            catch (ConfigurationErrorsException)
+            {
+                nameRusParam1 = "Param_1 default name";
+                nameRusParam2 = "Param_2 default name";
+                nameRusParam3 = "Param_3 default name";
+                nameRusParam4 = "Param_4 default name";
+                nameRusParam5 = "Param_5 default name";
+                fileNameCSV = "logfile.csv"; ;
+
+                MessageBox.Show("Произошла ошибка доступа к файлу настроек", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             rbComment1_CheckedChanged(this, null);
             rbComment2_CheckedChanged(this, null);
             rbComment3_CheckedChanged(this, null);
             rbComment4_CheckedChanged(this, null);
             rbComment5_CheckedChanged(this, null);
 
-           // txtbTime.Text = DateTime.Now.ToLongDateString();
+            // txtbTime.Text = DateTime.Now.ToLongDateString();
             txtbTime.Text = DateTime.Now.ToLocalTime().ToString();
 
-            Params[0] = new Param() { NameShort = "Param_1" };
-            Params[1] = new Param() { NameShort = "Param_2" };
-            Params[2] = new Param() { NameShort = "Param_3" };
-            Params[3] = new Param() { NameShort = "Param_4" };
-            Params[4] = new Param() { NameShort = "Param_5" };
+            Params[0] = new Param() { NameShort = "Param_1", NameRus = nameRusParam1 };
+            Params[1] = new Param() { NameShort = "Param_2", NameRus = nameRusParam2 };
+            Params[2] = new Param() { NameShort = "Param_3", NameRus = nameRusParam3 };
+            Params[3] = new Param() { NameShort = "Param_4", NameRus = nameRusParam4 };
+            Params[4] = new Param() { NameShort = "Param_5", NameRus = nameRusParam5 };
+
+            txtbParam1.Text = Params[0].NameRus;
+            txtbParam2.Text = Params[1].NameRus;
+            txtbParam3.Text = Params[2].NameRus;
+            txtbParam4.Text = Params[3].NameRus;
+            txtbParam5.Text = Params[4].NameRus;
+
         }
 
         private void rbComment1_CheckedChanged(object sender, EventArgs e)
@@ -166,7 +209,7 @@ namespace OperatorInpetFormPolimet
         private void WriteToCSV (string strToWrite)
         {
             string ss = Path.GetDirectoryName(Application.StartupPath);
-            CSVLog csvLog = new CSVLog(ss);
+            CSVLog csvLog = new CSVLog(ss + Path.DirectorySeparatorChar+ fileNameCSV);
             try
             {
                 csvLog.WriteToCSV(strToWrite);
@@ -174,7 +217,6 @@ namespace OperatorInpetFormPolimet
             catch (Exception)
             {
                 MessageBox.Show("Произошла ошибка записи данных", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
             }
             MessageBox.Show("Данные с меткой времени " + txtbTime.Text + " записаны!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             ClearForm();
@@ -218,7 +260,12 @@ namespace OperatorInpetFormPolimet
         {
             if (rbValue1.Checked)
             {
-                if(string.IsNullOrEmpty(txtbValueOpt1.Text) && string.IsNullOrEmpty(txtbValueReal1.Text))
+                
+                if (!string.IsNullOrEmpty(txtbValueOpt1.Text) && !string.IsNullOrEmpty(txtbValueReal1.Text))
+                {
+                    return true;
+                }
+                else
                 {
                     if (string.IsNullOrEmpty(txtbValueOpt1.Text))
                     {
@@ -230,6 +277,7 @@ namespace OperatorInpetFormPolimet
                     }
                     return false;
                 }
+
             }
             else
             {
@@ -238,8 +286,12 @@ namespace OperatorInpetFormPolimet
                     txtbComment1.Select();
                     return false;
                 }
+                else
+                {
+                    return true;
+                }
             }
-            return true;
+           
         }
 
         //Проверка что введенные данные корректны для 2 параметра
@@ -247,7 +299,11 @@ namespace OperatorInpetFormPolimet
         {
             if (rbValue2.Checked)
             {
-                if (string.IsNullOrEmpty(txtbValueOpt2.Text) && string.IsNullOrEmpty(txtbValueReal2.Text))
+                if (!string.IsNullOrEmpty(txtbValueOpt2.Text) && !string.IsNullOrEmpty(txtbValueReal2.Text))
+                {
+                    return true;
+                }
+                else
                 {
                     if (string.IsNullOrEmpty(txtbValueOpt2.Text))
                     {
@@ -267,8 +323,11 @@ namespace OperatorInpetFormPolimet
                     txtbComment2.Select();
                     return false;
                 }
+                else
+                {
+                    return true;
+                }
             }
-            return true;
         }
 
         //Проверка что введенные данные корректны для 3 параметра
@@ -276,7 +335,11 @@ namespace OperatorInpetFormPolimet
         {
             if (rbValue3.Checked)
             {
-                if (string.IsNullOrEmpty(txtbValueOpt3.Text) && string.IsNullOrEmpty(txtbValueReal3.Text))
+                if (!string.IsNullOrEmpty(txtbValueOpt3.Text) && !string.IsNullOrEmpty(txtbValueReal3.Text))
+                {
+                    return true;
+                }
+                else
                 {
                     if (string.IsNullOrEmpty(txtbValueOpt3.Text))
                     {
@@ -296,8 +359,11 @@ namespace OperatorInpetFormPolimet
                     txtbComment3.Select();
                     return false;
                 }
+                else
+                {
+                    return true;
+                }
             }
-            return true;
         }
 
         //Проверка что введенные данные корректны для 4 параметра
@@ -305,7 +371,11 @@ namespace OperatorInpetFormPolimet
         {
             if (rbValue4.Checked)
             {
-                if (string.IsNullOrEmpty(txtbValueOpt4.Text) && string.IsNullOrEmpty(txtbValueReal4.Text))
+                if (!string.IsNullOrEmpty(txtbValueOpt4.Text) && !string.IsNullOrEmpty(txtbValueReal4.Text))
+                {
+                    return true;
+                }
+                else
                 {
                     if (string.IsNullOrEmpty(txtbValueOpt4.Text))
                     {
@@ -317,6 +387,7 @@ namespace OperatorInpetFormPolimet
                     }
                     return false;
                 }
+
             }
             else
             {
@@ -325,8 +396,11 @@ namespace OperatorInpetFormPolimet
                     txtbComment4.Select();
                     return false;
                 }
+                else
+                {
+                    return true;
+                }
             }
-            return true;
         }
 
         //Проверка что введенные данные корректны для 5 параметра
@@ -334,7 +408,11 @@ namespace OperatorInpetFormPolimet
         {
             if (rbValue5.Checked)
             {
-                if (string.IsNullOrEmpty(txtbValueOpt5.Text) && string.IsNullOrEmpty(txtbValueReal5.Text))
+                if (!string.IsNullOrEmpty(txtbValueOpt5.Text) && !string.IsNullOrEmpty(txtbValueReal5.Text))
+                {
+                    return true;
+                }
+                else
                 {
                     if (string.IsNullOrEmpty(txtbValueOpt5.Text))
                     {
@@ -410,7 +488,27 @@ namespace OperatorInpetFormPolimet
                     e.Handled = false;
                     return;
                 }
-            short res;
+             if (e.KeyChar == '-')
+
+                    if (myTb.Text == string.Empty)
+                    {
+                        e.Handled = false;
+                        return;
+                    }
+                    else
+                    {
+                        e.Handled = true;
+                        return;
+                    }
+
+                if (e.KeyChar == 8)
+                {
+                    e.Handled = false;
+                    return;
+                }
+
+
+                short res;
             if (Int16.TryParse(e.KeyChar.ToString(), out res))
                 e.Handled = false;
             else
@@ -421,6 +519,39 @@ namespace OperatorInpetFormPolimet
         private void txtbValueOpt1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void settingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string promptValue = Prompt.ShowDialog("Введите пароль для доступа к настройкам", "Enter password ");
+            if (promptValue=="samsam")
+            {
+                Settings settings = new Settings();
+                if (settings.ShowDialog()==DialogResult.OK)
+                {
+                    InitSetting();
+                }
+                
+            }
+            else
+            {
+                MessageBox.Show("Неверный пароль", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
