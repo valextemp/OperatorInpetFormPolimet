@@ -8,6 +8,7 @@ namespace OperatorInpetFormPolimet
 {
     static class Program
     {
+        // My niew comment 20230519
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
